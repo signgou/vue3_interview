@@ -13,6 +13,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "axios": "^1.7.7",
+    "mockjs": "^1.1.0",
     "socket.io-client": "^4.8.1",
     "vant": "^4.9.8",
     "vue": "^3.5.12",
@@ -37,6 +39,8 @@
     "unplugin-auto-import": "^0.18.3",
     "unplugin-vue-components": "^0.27.4",
     "vite": "^5.4.10",
+    "vite-plugin-mock": "^3.0.2",
+    "vite-plugin-svg-icons": "^2.0.1",
     "vite-plugin-vue-devtools": "^7.5.3",
     "vue-tsc": "^2.1.6"
   }
