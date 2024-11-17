@@ -4,3 +4,16 @@
   font-family: '优设标题黑';
   src: url('/fonts/优设标题黑.ttf');
 }
+.title {
+  font-family: '优设标题黑', sans-serif;
+}
+.container {
+  height: 100vh;
+  align-content: center;
+}
+
+@media screen and (min-width: 900px) {
+  html {
+    font-size: 50px;
+  }
+}

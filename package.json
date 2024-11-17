@@ -13,11 +13,14 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@vant/touch-emulator": "^1.4.0",
     "axios": "^1.7.7",
     "mockjs": "^1.1.0",
+    "pinia": "^2.2.6",
     "socket.io-client": "^4.8.1",
     "vant": "^4.9.8",
     "vue": "^3.5.12",
+    "vue-router": "4",
     "webrtc-adapter": "^9.0.1"
   },
   "devDependencies": {
