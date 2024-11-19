@@ -1,5 +1,5 @@
 <template>
-  <van-nav-bar @click-left="back">
+  <van-nav-bar @click-left="$router.go(-1)">
     <template #left>
       <van-icon name="arrow-left" color="#323233"></van-icon>
     </template>
@@ -22,9 +22,7 @@
 <script setup lang="ts">
 import StudentVideoChat from '@/components/studentVC/StudentVideoChat.vue';
 
-const back = function () {
 
-}
 </script>
 
 <style lang="scss" scoped>

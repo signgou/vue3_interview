@@ -1,5 +1,5 @@
 <template>
-  <van-nav-bar @click-left="back">
+  <van-nav-bar @click-left="$router.go(-1)">
     <template #left>
       <van-icon name="arrow-left" color="#323233"></van-icon>
     </template>
@@ -56,9 +56,7 @@ onBeforeMount(() => {
     expert.linkStudent(room);
   }
 })
-const back = function () {
 
-}
 </script>
 
 <style lang="scss" scoped>
@@ -71,6 +69,7 @@ const back = function () {
     font-size: 1rem;
   }
 
+  overflow: auto;
   border: 0.1rem solid #eceff4;
   border-radius: 1rem;
   margin-top: 2rem;

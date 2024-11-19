@@ -1,6 +1,6 @@
 <template>
   <!-- 顶部导航栏 -->
-  <van-nav-bar @click-left="back">
+  <van-nav-bar @click-left="$router.push('/login')">
     <template #left>
       <van-icon name="arrow-left" color="#323233"></van-icon>
     </template>
@@ -39,7 +39,7 @@
   <!-- 底部标签栏 -->
   <van-tabbar v-model="active" class="title" active-color="#000000" inactive-color="#969799">
     <van-tabbar-item name="link" icon="exchange">连线</van-tabbar-item>
-    <van-tabbar-item name="profile" icon="user-o">我</van-tabbar-item>
+    <van-tabbar-item name="profile" icon="user-o" to="/isDeveloping">我</van-tabbar-item>
   </van-tabbar>
 
 </template>
@@ -55,6 +55,8 @@ interface student {
   room: string
 }
 const students = ref<student[]>([]);
+
+//挂载前初始化socket
 onBeforeMount(() => {
   expert.initSocket();
   expert.socket.on('updateStudents', (newStudents) => {
@@ -63,8 +65,6 @@ onBeforeMount(() => {
 })
 
 const active = ref('link');
-const back = function () {
-}
 </script>
 
 <style lang="scss" scoped>

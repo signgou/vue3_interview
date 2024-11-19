@@ -197,6 +197,12 @@ onBeforeMount(() => {
 const toStop = ref('暂停');
 const change = function () {
   if (toStop.value == '暂停') {
+    const stream = localVideo.value.srcObject;
+    if (stream) {
+      for (const track of stream.getTracks()) {
+        track.stop();
+      }
+    }
     localVideo.value.srcObject = null;
     toStop.value = '开始'
   }
@@ -207,7 +213,7 @@ const change = function () {
 }
 
 const end = function () {
-
+  console.log("结束面试");
 }
 </script>
 

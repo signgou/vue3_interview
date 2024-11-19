@@ -1,6 +1,6 @@
 <template>
   <!-- 顶部导航栏 -->
-  <van-nav-bar @click-left="back">
+  <van-nav-bar @click-left="$router.go(-1)">
     <template #left>
       <van-icon name="arrow-left" color="#323233"></van-icon>
     </template>
@@ -11,18 +11,16 @@
 
   <div class="container">
     <van-row justify="center">
-      <van-button class="btn title">人机面试</van-button>
+      <van-button class="btn title" to="/npcInterview">人机面试</van-button>
     </van-row>
     <van-row justify="center">
-      <van-button class="btn title">专家面试</van-button>
+      <van-button class="btn title" to="/studentInterview">专家面试</van-button>
     </van-row>
   </div>
 </template>
 
 <script setup lang="ts">
-const back = function () {
 
-}
 </script>
 
 <style lang="scss" scoped>

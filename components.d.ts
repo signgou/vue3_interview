@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ExpertVideoChat: typeof import('./src/components/expertVC/ExpertVideoChat.vue')['default']
+    NPCVideoChat: typeof import('./src/components/npcVC/NPCVideoChat.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     StudentVideoChat: typeof import('./src/components/studentVC/StudentVideoChat.vue')['default']
