@@ -10,10 +10,10 @@
       <van-field class=" title" label="再次确认密码" v-model="confirmPassword" placeholder="请确认密码"
         type="password"></van-field>
       <van-row justify="center">
-        <button class="register-btn title">注册</button>
+        <button class="register-btn title" @click="register">注册</button>
       </van-row>
       <van-row justify="end">
-        <button class="back-btn title">返回登录</button>
+        <router-link class="back-btn title" to="/login">返回登录</router-link>
       </van-row>
     </van-cell-group>
 
@@ -47,7 +47,9 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: pickerItem[] }) => {
   identity.value = selectedOptions[0].text;
   registerData.role = selectedOptions[0].value;
 };
-
+const register = function () {
+  console.log('注册');
+}
 </script>
 
 <style lang="scss" scoped>
@@ -76,11 +78,18 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: pickerItem[] }) => {
       padding: 0.2rem 2rem;
     }
 
+    .register-btn:active {
+      background-color: #c8c9cc;
+    }
+
     .back-btn {
-      margin-top: 1rem;
+      margin-top: 0.5rem;
       font-size: 1rem;
-      border-style: none;
-      background-color: transparent;
+      color: #000;
+    }
+
+    .back-btn:active {
+      color: #c8c9cc;
     }
   }
 }

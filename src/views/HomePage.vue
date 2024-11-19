@@ -11,10 +11,10 @@
     </van-row>
     <van-row justify="center" gutter="30">
       <van-col>
-        <van-button size="small" class="start-btn title">开始使用</van-button>
+        <van-button size="small" class="start-btn title" to="/login">开始使用</van-button>
       </van-col>
       <van-col>
-        <van-button size="small" class="detail-btn title">了解详情</van-button>
+        <van-button size="small" class="detail-btn title" to="/detail">了解详情</van-button>
       </van-col>
     </van-row>
   </div>

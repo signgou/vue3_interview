@@ -7,8 +7,10 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ExpertVideoChat: typeof import('./src/components/expertVC/ExpertVideoChat.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    StudentVideoChat: typeof import('./src/components/studentVC/StudentVideoChat.vue')['default']
     SvgIcon: typeof import('./src/components/SvgIcon.vue')['default']
     VanButton: typeof import('vant/es')['Button']
     VanCell: typeof import('vant/es')['Cell']
@@ -20,6 +22,7 @@ declare module 'vue' {
     VanGrid: typeof import('vant/es')['Grid']
     VanGridItem: typeof import('vant/es')['GridItem']
     VanIcon: typeof import('vant/es')['Icon']
+    VanList: typeof import('vant/es')['List']
     VanNavBar: typeof import('vant/es')['NavBar']
     VanPicker: typeof import('vant/es')['Picker']
     VanPopup: typeof import('vant/es')['Popup']
@@ -29,6 +32,6 @@ declare module 'vue' {
     VanTabbar: typeof import('vant/es')['Tabbar']
     VanTabbarItem: typeof import('vant/es')['TabbarItem']
     VantRow: typeof import('vant/es')['tRow']
-    VideoChat: typeof import('./src/components/ExpertInterview/VideoChat.vue')['default']
+    VideoChat: typeof import('./src/components/npcVC/VideoChat.vue')['default']
   }
 }

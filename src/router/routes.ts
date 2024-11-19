@@ -43,14 +43,15 @@ export const constRoutes = [
     name: 'npcInterview',
   },
   {
+    path: '/studentInterview',
+    component: () => import('@/views/StudentInterview.vue'),
+    name: 'studentInterview',
+  },
+  {
     path: '/expertInterview',
     component: () => import('@/views/ExpertInterview.vue'),
     name: 'expertInterview',
-  },
-  {
-    path: '/expertInterviewing',
-    component: () => import('@/views/ExpertInterviewing.vue'),
-    name: 'expertInterviewing',
+    props: route => ({ room: route.query.room }),
   },
   {
     path: '/:other(.*)*',

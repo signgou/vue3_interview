@@ -1,27 +1,47 @@
 <template>
-  <div class="container">
-    <input type="text" v-model="username" placeholder="username">
-    <input type="text" v-model="room" placeholder="room">
-    <video ref="localVideo" controls></video>
-    <video ref="remoteVideo" controls></video>
-    <button class="start-btn" @click="start">开始视频通话</button>
-  </div>
+  <van-row justify="center">
+    <video class="remoteVideo" ref="remoteVideo"></video>
+  </van-row>
+  <van-row justify="center" gutter='50'>
+    <van-col>
+      <video class="localVideo" ref="localVideo"></video>
+    </van-col>
+    <van-col>
+      <van-row justify='center'>
+        <van-button :loading="load" v-show="!isReady" class="link-btn title" @click="wait">等待专家连线</van-button>
+        <van-button v-show="isReady" class="link-btn title" @click="link">已匹配，开始面试</van-button>
+      </van-row>
+      <van-row justify='center'>
+        <van-button class="stop-btn title" @click="change">{{ toStop }}</van-button>
+      </van-row>
+    </van-col>
+  </van-row>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { io, Socket } from 'socket.io-client';
 
-const room = ref("room1");
+
 const username = ref("lisi");
 const localVideo = ref();
 const remoteVideo = ref();
-//记录上一次的socket
-let mySocket: Socket;
+
+//是否准备好面试
+const isReady = ref(false);
+const load = ref(false);
+//记录是否为第一次
 let firstTime = true;
+let socket: Socket;
 //rtc
 const config = {
-  iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  iceServers: [
+    {
+      urls: ["stun:stun.l.google.com:19302",
+        "stun:stun.l.google.com",
+        "stun:stun1.l.google.com"]
+    },
+  ],
 };
 const pc = new RTCPeerConnection(config);
 const constraints = {
@@ -29,37 +49,27 @@ const constraints = {
   video: true,
 };
 let makingOffer = false;
-let polite = true;
+const polite = false;
+
 
 const initRTC = function () {
   if (!firstTime) {
-    mySocket.disconnect();
+    socket.disconnect();
   }
   //socket
-  const socket = io('https://192.168.29.254:3000', {
-    query: { username: username.value, room: room.value }
+  socket = io('https://192.168.29.254:3000', {
+    query: { username: username.value, role: 'student' }
   });
-  mySocket = socket;
   firstTime = false;
 
-  socket.on("connect", () => {
-    socket.on("full", () => {
-      alert("该房间已满");
-      socket.disconnect();
-    })
-  })
-
-  socket.on("polite", (p) => {
-    polite = p;
-  });
   //添加轨道的事件
   pc.ontrack = ({ streams }) => {
     if (remoteVideo.value.srcObject) {
       return;
     }
     remoteVideo.value.srcObject = streams[0];
+    remoteVideo.value.play();
   };
-
 
   //完美协商
   pc.onnegotiationneeded = async () => {
@@ -74,17 +84,20 @@ const initRTC = function () {
     }
   };
   pc.onicecandidate = ({ candidate }) => socket.emit("message", { candidate });
+
   //出现ice错误是重新获取ice
   pc.oniceconnectionstatechange = () => {
     if (pc.iceConnectionState === "failed") {
       pc.restartIce();
     }
   };
+
   interface Data {
     description: RTCSessionDescription,
     candidate: RTCIceCandidate
   }
   let ignoreOffer = false;
+
   const onmessage = async ({ description, candidate }: Data) => {
     try {
       if (description) {
@@ -116,20 +129,30 @@ const initRTC = function () {
     }
   };
   socket.on("message", onmessage);
+  socket.on('ready', () => {
+    isReady.value = true;
+    load.value = false;
+  })
 }
 
-async function start() {
+const wait = function () {
+  load.value = true;
   initRTC();
+}
+
+async function link() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     for (const track of stream.getTracks()) {
       pc.addTrack(track, stream);
     }
     localVideo.value.srcObject = stream;
+    localVideo.value.play();
   } catch (err) {
     console.error(err);
   }
 }
+
 // const constraints = { audio: true, video: true };
 // const video = ref();
 //媒体
@@ -190,15 +213,38 @@ async function start() {
 
 // }
 
+const toStop = ref('暂停');
+const change = function () {
+  if (toStop.value == '暂停') {
+    localVideo.value.srcObject = null;
+    toStop.value = '开始'
+  }
+  else {
+    link();
+    toStop.value = '暂停'
+  }
+}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .container {
-  width: 100%;
+  .remoteVideo {
+    width: 18rem;
+    height: 9rem;
+    margin-bottom: 3rem;
+    border: 0.1rem solid #eceff4;
+    border-radius: 0.5rem;
+  }
 
-  video {
-    display: block;
-    height: 180px;
+  .localVideo {
+    width: 5rem;
+    height: 6rem;
+    border: 0.1rem solid #eceff4;
+    border-radius: 0.5rem;
+  }
+
+  .link-btn {
+    margin-bottom: 0.5rem;
   }
 }
 </style>

@@ -28,7 +28,8 @@
   <!-- 选择连线 -->
   <div class="link-box">
     <van-grid :gutter="10">
-      <van-grid-item v-for="value in 8" :key="value" icon="contact-o" text="学生" />
+      <van-grid-item v-for="student in students" :key="student.key" icon="contact-o" :text="student.username"
+        :to="`/expertInterview?room=${student.room}`" />
     </van-grid>
 
     <!-- 加一个空白区域防止底部标签栏挡住选项 -->
@@ -44,11 +45,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
+import useExpertStore from '@/store/modules/expert';
+const expert = useExpertStore();
+
+interface student {
+  key: string
+  username: string
+  room: string
+}
+const students = ref<student[]>([]);
+onBeforeMount(() => {
+  expert.initSocket();
+  expert.socket.on('updateStudents', (newStudents) => {
+    students.value = newStudents;
+  })
+})
 
 const active = ref('link');
 const back = function () {
-
 }
 </script>
 

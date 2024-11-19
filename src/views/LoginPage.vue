@@ -8,10 +8,11 @@
       <van-field class=" title" label="密码" v-model="loginData.password" placeholder="请输入密码" type="password"></van-field>
 
       <van-row justify="center">
-        <button class="login-btn title">登录</button>
+        <button class="login-btn title" @click="login">登录</button>
       </van-row>
+
       <van-row justify="end">
-        <button class="register-btn title">没有账号？立即注册</button>
+        <router-link class="register-btn title" to="/register">没有账号？立即注册</router-link>
       </van-row>
     </van-cell-group>
 
@@ -24,8 +25,8 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router';
 const identity = ref("学生");
-
 const loginData = reactive({
   username: '',
   password: '',
@@ -46,6 +47,16 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: pickerItem[] }) => {
   loginData.role = selectedOptions[0].value;
 };
 
+const router = useRouter();
+const login = function () {
+  console.log("登录成功");
+  if (loginData.role == 'CANDICATE') {
+    router.push('/studentHome')
+  }
+  else if (loginData.role == 'INTERVIEWER') {
+    router.push('/expertHome')
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -74,12 +85,16 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: pickerItem[] }) => {
       padding: 0.2rem 2rem;
     }
 
-    .register-btn {
-      margin-top: 1rem;
-      font-size: 1rem;
-      border-style: none;
-      background-color: transparent;
+    .login-btn:active {
+      background-color: #c8c9cc;
     }
+
+    .register-btn {
+      font-size: 1rem;
+      color: black;
+      margin-top: 1rem;
+    }
+
   }
 }
 </style>

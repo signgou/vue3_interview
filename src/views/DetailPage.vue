@@ -25,10 +25,8 @@
     </van-row>
 
     <van-row justify="center">
-      <van-button hairline class="start-btn title">开始使用</van-button>
+      <van-button hairline class="start-btn title" to="/login">开始使用</van-button>
     </van-row>
-
-
   </div>
 </template>
 
