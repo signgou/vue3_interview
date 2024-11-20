@@ -9,10 +9,10 @@
     </van-col>
     <van-col>
       <van-row justify='center'>
-        <van-button class="link-btn title" @click="link">开始连线</van-button>
+        <van-button v-show="!isReady" class="link-btn title" @click="link">开始连线</van-button>
       </van-row>
       <van-row justify='center'>
-        <van-button class="stop-btn title" @click="change">{{ toStop }}</van-button>
+        <van-button v-show="isReady" class="stop-btn title" @click="change">{{ toStop }}</van-button>
       </van-row>
       <van-row justify='center'>
         <van-button class="end-btn title" @click="end">结束面试</van-button>
@@ -52,9 +52,6 @@ const polite = true;
 const initRTC = function () {
   //添加轨道的事件
   pc.ontrack = ({ streams }) => {
-    if (remoteVideo.value.srcObject) {
-      return;
-    }
     remoteVideo.value.srcObject = streams[0];
     remoteVideo.value.play();
   };
@@ -85,7 +82,6 @@ const initRTC = function () {
   let ignoreOffer = false;
   //发信息
   const onmessage = async ({ description, candidate }: Data) => {
-    console.log('处理信息')
     try {
       if (description) {
         const offerCollision =
@@ -118,6 +114,7 @@ const initRTC = function () {
   socket.value.on("message", onmessage);
 }
 
+const isReady = ref(false);
 async function link() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -126,6 +123,7 @@ async function link() {
     }
     localVideo.value.srcObject = stream;
     localVideo.value.play();
+    isReady.value = true;
   } catch (err) {
     console.error(err);
   }
@@ -203,8 +201,8 @@ const change = function () {
         track.stop();
       }
     }
+    toStop.value = '开始';
     localVideo.value.srcObject = null;
-    toStop.value = '开始'
   }
   else {
     link();
@@ -214,6 +212,7 @@ const change = function () {
 
 const end = function () {
   console.log("结束面试");
+
 }
 </script>
 
@@ -237,7 +236,7 @@ const end = function () {
   .link-btn,
   .stop-btn,
   .end-btn {
-    height: 1.5rem;
+    height: 2.5rem;
     margin-bottom: 0.8rem;
   }
 

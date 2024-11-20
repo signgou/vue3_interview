@@ -1,6 +1,6 @@
 <template>
   <!-- 顶部导航栏 -->
-  <van-nav-bar @click-left="$router.push('/login')">
+  <van-nav-bar @click-left="$router.push('/login'); expert.socket.disconnect()">
     <template #left>
       <van-icon name="arrow-left" color="#323233"></van-icon>
     </template>

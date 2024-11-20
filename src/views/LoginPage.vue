@@ -8,7 +8,7 @@
       <van-field class=" title" label="密码" v-model="loginData.password" placeholder="请输入密码" type="password"></van-field>
 
       <van-row justify="center">
-        <button class="login-btn title" @click="login">登录</button>
+        <button class="login-btn title" @click="onLogin">登录</button>
       </van-row>
 
       <van-row justify="end">
@@ -21,11 +21,48 @@
       </van-picker>
     </van-popup>
   </div>
+
+  <!-- 开发阶段用于授权浏览器给不安全证书放行 -->
+  <a ref="auth" style="display: none;"></a>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router';
+import useStudentStore from '@/store/modules/student';
+import useExpertStore from '@/store/modules/expert';
+import { login } from '@/apis/users';
+import { showConfirmDialog, showFailToast, showSuccessToast, showToast } from 'vant';
+
+const auth = ref<HTMLAnchorElement>();
+onMounted(() => {
+  const { DEV } = import.meta.env;
+  if (DEV && localStorage.getItem('isAuth') != 'true') {
+    showConfirmDialog({
+      title: '温馨提醒',
+      message:
+        '开发环境中使用了自签证书，需要浏览器信任，故请在确认后，信任在新窗口弹出的两个网站，否则无法使用相应功能\n(浏览器可能会阻止弹出多个窗口，请授权后刷新)\n(信任的具体操作：高级->继续前往 "xxx .com" ;若可以正常打开即已信任，回到登录界面即可)',
+      messageAlign: 'left'
+    })
+      .then(() => {
+        if (auth.value) {
+          auth.value.target = '_blank';
+          const {
+            VITE_APP_BASE_API: api_url,
+            VITE_APP_SOCKET_URL: socket_url
+          } = import.meta.env;
+          auth.value.href = api_url;
+          auth.value.click();
+          auth.value.href = socket_url;
+          auth.value.click();
+        }
+      })
+      .catch(() => {
+        showToast('T_T\n再次刷新可以去信任');
+      })
+  }
+})
+
 const identity = ref("学生");
 const loginData = reactive({
   username: '',
@@ -48,14 +85,33 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: pickerItem[] }) => {
 };
 
 const router = useRouter();
-const login = function () {
-  console.log("登录成功");
-  if (loginData.role == 'CANDICATE') {
-    router.push('/studentHome')
+
+const onLogin = async function () {
+  try {
+    const res = await login(loginData);
+    console.log(res);
+    if (res.msg == 'success') {
+      showSuccessToast("登录成功")
+      if (loginData.role == 'CANDICATE') {
+        const student = useStudentStore();
+        student.username = loginData.username;
+        router.push('/studentHome')
+      }
+      else if (loginData.role == 'INTERVIEWER') {
+        const expert = useExpertStore();
+        expert.username = loginData.username;
+        router.push('/expertHome')
+      }
+      localStorage.setItem('isAuth', 'true');
+    }
+    else {
+      showFailToast(res.msg);
+    }
   }
-  else if (loginData.role == 'INTERVIEWER') {
-    router.push('/expertHome')
+  catch (err) {
+    console.error(err);
   }
+
 }
 </script>
 

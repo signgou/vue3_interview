@@ -11,16 +11,14 @@ const useExpertStore = defineStore('Expert', {
     } as {
       username: string
       socket: Socket
-      first: boolean
     }
   },
   actions: {
     initSocket() {
       this.socket.disconnect()
-      this.socket = io('https://192.168.29.254:3000', {
+      this.socket = io(import.meta.env.VITE_APP_SOCKET_URL, {
         query: { username: this.username, role: 'expert' },
       })
-      this.first = false
     },
     linkStudent(room: string) {
       this.socket.emit('join', room)

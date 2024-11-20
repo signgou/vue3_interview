@@ -10,7 +10,7 @@
       <van-field class=" title" label="再次确认密码" v-model="confirmPassword" placeholder="请确认密码"
         type="password"></van-field>
       <van-row justify="center">
-        <button class="register-btn title" @click="register">注册</button>
+        <button class="register-btn title" @click="onRegister">注册</button>
       </van-row>
       <van-row justify="end">
         <router-link class="back-btn title" to="/login">返回登录</router-link>
@@ -26,6 +26,10 @@
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
+import { register } from '@/apis/users';
+import { showSuccessToast, showFailToast } from 'vant';
+
+
 const identity = ref("学生");
 const confirmPassword = ref('');
 const registerData = reactive({
@@ -47,8 +51,22 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: pickerItem[] }) => {
   identity.value = selectedOptions[0].text;
   registerData.role = selectedOptions[0].value;
 };
-const register = function () {
+
+const onRegister = async function () {
   console.log('注册');
+  if (registerData.password != confirmPassword.value) {
+    showFailToast("两次密码不一样")
+    return;
+  }
+
+  const res = await register(registerData);
+  console.log(res);
+  if (res.msg == 'success') {
+    showSuccessToast("注册成功")
+  }
+  else {
+    showFailToast(res.msg);
+  }
 }
 </script>
 

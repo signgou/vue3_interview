@@ -21,6 +21,7 @@ export default defineConfig({
     Components({
       resolvers: [VantResolver()],
     }),
+    //ssl证书
     basicSsl({
       /** name of certification */
       name: 'test',
@@ -29,6 +30,7 @@ export default defineConfig({
       /** custom certification directory */
       certDir: '/Users/.../.devServer/cert',
     }),
+
     createSvgIconsPlugin({
       // Specify the icon folder to be cached
       iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],

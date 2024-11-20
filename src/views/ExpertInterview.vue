@@ -52,7 +52,7 @@ const { room } = defineProps({
 });
 onBeforeMount(() => {
   if (room) {
-    console.log(room);
+    //console.log(room);
     expert.linkStudent(room);
   }
 })

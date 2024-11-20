@@ -7,29 +7,28 @@
       <video class="localVideo" ref="localVideo"></video>
     </van-col>
     <van-col>
-      <van-row justify='center'>
-        <van-button :loading="load" v-show="!isReady" class="link-btn title" @click="wait">等待专家连线</van-button>
-        <van-button v-show="isReady" class="link-btn title" @click="link">已匹配，开始面试</van-button>
-      </van-row>
-      <van-row justify='center'>
-        <van-button class="stop-btn title" @click="change">{{ toStop }}</van-button>
-      </van-row>
+      <van-button :loading="load" v-show="!isReady" class="link-btn title" @click="wait">等待专家连线</van-button>
+      <van-button v-show="isReady && !underway" class="link-btn title" @click="link">已匹配，开始面试</van-button>
+      <van-button v-show="underway" class="stop-btn title" @click="change">{{ toStop }}</van-button>
     </van-col>
   </van-row>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 import { io, Socket } from 'socket.io-client';
+import useStudentStore from '@/store/modules/student';
 
 
-const username = ref("lisi");
+const student = useStudentStore();
 const localVideo = ref();
 const remoteVideo = ref();
 
 //是否准备好面试
 const isReady = ref(false);
 const load = ref(false);
+//面试中
+const underway = ref(false);
 //记录是否为第一次
 let firstTime = true;
 let socket: Socket;
@@ -57,16 +56,13 @@ const initRTC = function () {
     socket.disconnect();
   }
   //socket
-  socket = io('https://192.168.29.254:3000', {
-    query: { username: username.value, role: 'student' }
+  socket = io(import.meta.env.VITE_APP_SOCKET_URL, {
+    query: { username: student.username, role: 'student' }
   });
   firstTime = false;
 
   //添加轨道的事件
   pc.ontrack = ({ streams }) => {
-    if (remoteVideo.value.srcObject) {
-      return;
-    }
     remoteVideo.value.srcObject = streams[0];
     remoteVideo.value.play();
   };
@@ -91,7 +87,6 @@ const initRTC = function () {
       pc.restartIce();
     }
   };
-
   interface Data {
     description: RTCSessionDescription,
     candidate: RTCIceCandidate
@@ -148,6 +143,7 @@ async function link() {
     }
     localVideo.value.srcObject = stream;
     localVideo.value.play();
+    underway.value = true;
   } catch (err) {
     console.error(err);
   }
@@ -222,14 +218,19 @@ const change = function () {
         track.stop();
       }
     }
-    localVideo.value.srcObject = null;
     toStop.value = '开始'
+    localVideo.value.srcObject = null;
   }
   else {
     link();
     toStop.value = '暂停'
   }
 }
+
+//卸载前断连socket,localVideo
+onBeforeUnmount(() => {
+  if (socket) socket.disconnect();
+})
 </script>
 
 <style lang="scss" scoped>
