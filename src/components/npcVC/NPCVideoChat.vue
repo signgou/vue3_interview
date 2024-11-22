@@ -1,6 +1,6 @@
 <template>
   <van-row justify="center">
-    <video class="npcVideo" ref="npcVideo"></video>
+    <van-icon name="volume-o" class="npc" size="4rem" />
   </van-row>
   <van-row justify="center" gutter='50'>
     <van-col>
@@ -8,34 +8,64 @@
     </van-col>
     <van-col>
       <van-row justify='center'>
-        <van-button class="start-btn title" @click="start">开始面试</van-button>
+        <van-button v-show="canStart" class="start-btn title" @click="start">开始面试</van-button>
       </van-row>
       <van-row justify='center'>
-        <van-button class="stop-btn title" @click="stop">暂停</van-button>
+        <van-button v-show="!canStart && !theEnd" class="next-btn title" @click="next">下一题</van-button>
+      </van-row>
+      <van-row justify='center'>
+        <van-button v-show="!canStart" class="stop-btn title" @click="stop">关闭摄像头</van-button>
       </van-row>
     </van-col>
   </van-row>
+
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
+import { speak } from '@/utils/speech';
+import type { Question } from '@/apis/questions/type';
 
 const localVideo = ref();
-const npcVideo = ref();
+const { questions, isEnd } = defineProps<{
+  questions: Question[],
+  isEnd: (state: boolean) => void
+}>()
 
 const constraints = {
   audio: true,
   video: true,
 };
+const canStart = ref(true);
 async function start() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     localVideo.value.srcObject = stream;
     localVideo.value.play();
+    index = 0;
+    canStart.value = false;
+    theEnd.value = false;
+    isEnd(false);
+    speak('人机面试开始，在听完并回答完问题后，即可点击下一题继续面试')
+    next();
   } catch (err) {
     console.error(err);
   }
 }
+
+let index = 0;
+const theEnd = ref(false);
+const next = function () {
+  if (index < questions.length) {
+    speak(`问题${index + 1}:` + questions[index++].questionText);
+  }
+  else {
+    speak("面试结束，请自行查看答案");
+    theEnd.value = true;
+    isEnd(true);
+  }
+}
+
 //用于录制视频
 // const constraints = { audio: true, video: true };
 // const video = ref();
@@ -93,25 +123,27 @@ async function start() {
 //   mediaRecorder.stop();
 // }
 
-// const startVideo = function () {
-
-// }
-
 const stop = function () {
   const stream = localVideo.value.srcObject;
   for (const track of stream.getTracks()) {
     track.stop();
   }
   localVideo.value.srcObject = null;
+  canStart.value = true;
 }
+
+//离开页面时若未关闭摄像头就将其关闭
+onBeforeUnmount(() => {
+  if (localVideo.value.srcObject) stop();
+})
+
 </script>
 
 <style lang="scss" scoped>
 .container {
-  .npcVideo {
-    width: 18rem;
-    height: 9rem;
-    margin-bottom: 3rem;
+  .npc {
+    padding: 3rem 6rem;
+    margin-bottom: 1rem;
     border: 0.1rem solid #eceff4;
     border-radius: 0.5rem;
   }
@@ -123,8 +155,11 @@ const stop = function () {
     border-radius: 0.5rem;
   }
 
+  .stop-btn,
+  .next-btn,
   .start-btn {
-    margin-bottom: 0.5rem;
+    height: 2rem;
+    margin-bottom: 1rem;
   }
 }
 </style>

@@ -27,9 +27,15 @@
 
   <!-- 选择连线 -->
   <div class="link-box">
+    <van-row justify="center">
+      <h1 class="main title">等待连线学生列表</h1>
+    </van-row>
+    <van-row justify="center">
+      <h2 v-show="!students.length" class="sub title">现在无学生，可以稍作休息^_^</h2>
+    </van-row>
     <van-grid :gutter="10">
       <van-grid-item v-for="student in students" :key="student.key" icon="contact-o" :text="student.username"
-        :to="`/expertInterview?room=${student.room}`" />
+        :to="`/expertInterview?room=${student.room}&setID=${student.setID}`" />
     </van-grid>
 
     <!-- 加一个空白区域防止底部标签栏挡住选项 -->
@@ -53,6 +59,7 @@ interface student {
   key: string
   username: string
   room: string
+  setID: string
 }
 const students = ref<student[]>([]);
 
@@ -69,7 +76,17 @@ const active = ref('link');
 
 <style lang="scss" scoped>
 .link-box {
-  margin-top: 5rem;
+  .main.title {
+    margin-bottom: 1rem;
+  }
+
+  .sub.title {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #969799;
+  }
+
+  margin-top: 4rem;
   height: auto;
 }
 

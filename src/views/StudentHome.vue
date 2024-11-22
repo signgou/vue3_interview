@@ -34,9 +34,14 @@
         <van-cell title-style="color:#969799" title="其他"></van-cell>
       </van-collapse-item>
       <van-collapse-item class="title" title="面试练习" name="2">
-        <van-cell title-style="color:#969799" title="基础素质测试" clickable to="/selectMode"></van-cell>
-        <van-cell title-style="color:#969799" title="专业技能面试" clickable to="/selectMode"></van-cell>
-        <van-cell title-style="color:#969799" title="综合面试" clickable to="/selectMode"></van-cell>
+        <van-cell v-for="questionBank in questionBanks" :key="questionBank.id" title-style="color:#969799"
+          :title="questionBank.name" clickable :to="{
+            path: '/questionBank',
+            query: {
+              title: questionBank.name,
+              bankID: questionBank.id
+            }
+          }"></van-cell>
       </van-collapse-item>
       <van-collapse-item class="title" title="模拟考试" name="3">
         <van-cell title-style="color:#969799" title="笔试模拟"></van-cell>
@@ -58,9 +63,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { getAllQuestionBanks } from '@/apis/questions';
+import type { QuestionBank } from '@/apis/questions/type';
+import { showFailToast } from 'vant';
+import { reactive, ref, onBeforeMount } from 'vue'
 const activeNames = ref([]);
 const active = ref('exercise');
+
+let questionBanks: QuestionBank[] = reactive([]);
+onBeforeMount(async () => {
+  try {
+    questionBanks = await getAllQuestionBanks();
+  }
+  catch (err) {
+    console.error(err);
+    showFailToast('出错了');
+  }
+})
 
 </script>
 

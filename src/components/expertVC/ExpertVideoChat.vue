@@ -19,12 +19,34 @@
       </van-row>
     </van-col>
   </van-row>
+
+  <van-popup v-model:show="showRate" round>
+    <div class="rate">
+      <van-row justify="center">
+        <h1 class="total title">面试评价</h1>
+      </van-row>
+      <van-row>
+        <h1 class="main title">评分:</h1>
+      </van-row>
+      <van-row justify="center">
+        <van-rate color="#ffd21e" v-model="rate.score" allow-half />
+      </van-row>
+      <van-row justify="center">
+        <van-field class="comment title" v-model="rate.comment" label="评语:" placeholder="对这次面试的评语" label-align="top" />
+      </van-row>
+      <van-row justify="center">
+        <van-button class="comfirm-btn title" @click="finishRate">确认评价</van-button>
+      </van-row>
+    </div>
+  </van-popup>
+
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, onBeforeUnmount, reactive, ref } from 'vue'
 
 import useExpertStore from '@/store/modules/expert';
+import { useRouter } from 'vue-router';
 
 const localVideo = ref();
 const remoteVideo = ref();
@@ -129,6 +151,7 @@ async function link() {
   }
 }
 
+
 onBeforeMount(() => {
   initRTC();
 })
@@ -210,13 +233,53 @@ const change = function () {
   }
 }
 
+const showRate = ref(false);
 const end = function () {
   console.log("结束面试");
-
+  socket.value.emit('end');
+  showRate.value = true;
 }
+const rate = reactive({
+  score: 2.5,
+  comment: '好'
+})
+const router = useRouter();
+const finishRate = function () {
+  socket.value.emit('rate', rate);
+  showRate.value = false;
+  change();
+  router.push('/expertHome');
+}
+
+onBeforeUnmount(() => {
+  if (localVideo.value.srcObject) change();
+})
 </script>
 
 <style lang="scss" scoped>
+.rate {
+  padding: 1rem;
+  align-content: center;
+
+  .total.title {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .main.title {
+    font-size: 0.9rem;
+    padding-left: 16px;
+  }
+
+  .comment.title {
+    font-size: 0.9rem;
+  }
+
+  .comfirm-btn {
+    border-style: none;
+  }
+}
+
 .container {
   .remoteVideo {
     width: 18rem;

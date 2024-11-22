@@ -4,7 +4,9 @@ import { defineStore } from 'pinia'
 const useStudentStore = defineStore('Student', {
   state() {
     return {
-      username: '',
+      data: {
+        username: '',
+      },
     }
   },
   actions: {},

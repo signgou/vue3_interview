@@ -7,8 +7,8 @@
       <van-field class=" title" label="账号" v-model="registerData.username" placeholder="请输入账号"></van-field>
       <van-field class=" title" label="密码" v-model="registerData.password" placeholder="请输入密码"
         type="password"></van-field>
-      <van-field class=" title" label="再次确认密码" v-model="confirmPassword" placeholder="请确认密码"
-        type="password"></van-field>
+      <van-field class=" title" label="再次确认密码" v-model="confirmPassword" placeholder="请确认密码" type="password"
+        @keyup.enter="onRegister"></van-field>
       <van-row justify="center">
         <button class="register-btn title" @click="onRegister">注册</button>
       </van-row>
@@ -53,7 +53,6 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: pickerItem[] }) => {
 };
 
 const onRegister = async function () {
-  console.log('注册');
   if (registerData.password != confirmPassword.value) {
     showFailToast("两次密码不一样")
     return;

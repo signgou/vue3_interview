@@ -22,11 +22,11 @@ const props = defineProps({
   },
   width: {
     type: String,
-    default: '16px'
+    default: '1rem'
   },
   height: {
     type: String,
-    default: '16px'
+    default: '1rem'
   }
 });
 const symbolId = computed(() => `#${props.prefix}-${props.name}`)

@@ -5,20 +5,26 @@ import { io } from 'socket.io-client'
 const useExpertStore = defineStore('Expert', {
   state() {
     return {
-      username: '',
+      data: {
+        username: '',
+      },
       socket: io(),
       first: true,
     } as {
-      username: string
+      data: {
+        username: string
+      }
       socket: Socket
+      first: boolean
     }
   },
   actions: {
     initSocket() {
       this.socket.disconnect()
       this.socket = io(import.meta.env.VITE_APP_SOCKET_URL, {
-        query: { username: this.username, role: 'expert' },
+        query: { username: this.data.username, role: 'expert' },
       })
+      this.first = false
     },
     linkStudent(room: string) {
       this.socket.emit('join', room)

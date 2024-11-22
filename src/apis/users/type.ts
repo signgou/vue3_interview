@@ -1,21 +1,21 @@
-export interface loginData {
+export interface LoginData {
   username: string
   password: string
   role: string
 }
-export interface loginRes {
+export interface LoginRes {
   code: string
   msg: string
   data: string
 }
 
-export interface registerData {
+export interface RegisterData {
   username: string
   password: string
   role: string
 }
 
-export interface registerRes {
+export interface RegisterRes {
   code: string
   msg: string
   data: string

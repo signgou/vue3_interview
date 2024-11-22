@@ -12,26 +12,52 @@
       <van-button v-show="underway" class="stop-btn title" @click="change">{{ toStop }}</van-button>
     </van-col>
   </van-row>
+
+  <!-- 评分弹窗 -->
+  <van-popup @click-overlay="finish" v-model:show="showRate" round>
+    <div class="rate">
+      <van-row justify="center">
+        <h1 class="total title">面试评价</h1>
+      </van-row>
+      <van-row>
+        <h1 class="main title">评分:</h1>
+      </van-row>
+      <van-row justify="center">
+        <van-rate readonly color="#ffd21e" v-model="rate.score" allow-half />
+      </van-row>
+      <van-row justify="center">
+        <van-field readonly class="comment title" v-model="rate.comment" label="评语:" placeholder="对这次面试的评语"
+          label-align="top" />
+      </van-row>
+      <van-row justify="center">
+        <van-button class="comfirm-btn title" @click="finish">结束这次面试</van-button>
+      </van-row>
+    </div>
+  </van-popup>
 </template>
 
 <script setup lang="ts">
 import { onBeforeUnmount, ref } from 'vue'
 import { io, Socket } from 'socket.io-client';
 import useStudentStore from '@/store/modules/student';
+import { closeToast, showFailToast, showLoadingToast } from 'vant';
+import { useRouter } from 'vue-router';
 
 
 const student = useStudentStore();
 const localVideo = ref();
 const remoteVideo = ref();
-
+const { setID } = defineProps(['setID']);
 //是否准备好面试
 const isReady = ref(false);
 const load = ref(false);
 //面试中
 const underway = ref(false);
+
 //记录是否为第一次
 let firstTime = true;
 let socket: Socket;
+
 //rtc
 const config = {
   iceServers: [
@@ -50,16 +76,51 @@ const constraints = {
 let makingOffer = false;
 const polite = false;
 
+interface Rate {
+  score: number
+  comment: string
+}
+let rate: Rate;
+const showRate = ref(false);
+const router = useRouter();
+const finish = function () {
+  showRate.value = false;
+  if (localVideo.value.srcObject) change();
+  router.push('/studentHome');
+}
 
-const initRTC = function () {
+const initSocket = function () {
   if (!firstTime) {
     socket.disconnect();
   }
+  if (!setID) {
+    showFailToast('setID出错了，请重新点击');
+    return;
+  }
   //socket
   socket = io(import.meta.env.VITE_APP_SOCKET_URL, {
-    query: { username: student.username, role: 'student' }
+    query: { username: student.data.username, role: 'student', setID }
   });
+  socket.on('isEnd', () => {
+    showLoadingToast({
+      duration: 0,
+      forbidClick: true,
+      message: '等待评价中',
+    });
+  })
+  socket.on('theRate', (theRate: Rate) => {
+    closeToast();
+    rate = theRate;
+    showRate.value = true;
+  })
+  socket.on('ready', () => {
+    isReady.value = true;
+    load.value = false;
+  })
   firstTime = false;
+}
+
+const initRTC = function () {
 
   //添加轨道的事件
   pc.ontrack = ({ streams }) => {
@@ -124,14 +185,11 @@ const initRTC = function () {
     }
   };
   socket.on("message", onmessage);
-  socket.on('ready', () => {
-    isReady.value = true;
-    load.value = false;
-  })
 }
 
 const wait = function () {
   load.value = true;
+  initSocket();
   initRTC();
 }
 
@@ -230,10 +288,37 @@ const change = function () {
 //卸载前断连socket,localVideo
 onBeforeUnmount(() => {
   if (socket) socket.disconnect();
+  if (localVideo.value.srcObject) change();
+  closeToast();
 })
 </script>
 
 <style lang="scss" scoped>
+.rate {
+  padding: 1rem;
+  align-content: center;
+
+  .total.title {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .main.title {
+    font-size: 0.9rem;
+    padding-left: 16px;
+  }
+
+  .comment.title {
+    font-size: 0.9rem;
+    color: #696c6e
+  }
+
+  .comfirm-btn {
+    border-style: none;
+  }
+}
+
+
 .container {
   .remoteVideo {
     width: 18rem;

@@ -41,17 +41,27 @@ export const constRoutes = [
     path: '/npcInterview',
     component: () => import('@/views/NPCInterview.vue'),
     name: 'npcInterview',
+    props: route => route.query,
   },
   {
     path: '/studentInterview',
     component: () => import('@/views/StudentInterview.vue'),
     name: 'studentInterview',
+    props: route => route.query,
   },
   {
     path: '/expertInterview',
     component: () => import('@/views/ExpertInterview.vue'),
     name: 'expertInterview',
-    props: route => ({ room: route.query.room }),
+    props: route => route.query,
+  },
+  {
+    path: '/questionBank',
+    component: () => import('@/views/QuestionBank.vue'),
+    name: 'questionBank',
+    props: route => {
+      return route.query
+    },
   },
   {
     path: '/:other(.*)*',

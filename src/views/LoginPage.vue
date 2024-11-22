@@ -5,7 +5,8 @@
       <van-field class=" title" v-model="identity" is-link readonly label="身份" placeholder="请选择身份"
         @click="showPicker = true"></van-field>
       <van-field class=" title" label="账号" v-model="loginData.username" placeholder="请输入账号"></van-field>
-      <van-field class=" title" label="密码" v-model="loginData.password" placeholder="请输入密码" type="password"></van-field>
+      <van-field class=" title" label="密码" v-model="loginData.password" placeholder="请输入密码" type="password"
+        @keyup.enter="onLogin"></van-field>
 
       <van-row justify="center">
         <button class="login-btn title" @click="onLogin">登录</button>
@@ -28,7 +29,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import useStudentStore from '@/store/modules/student';
 import useExpertStore from '@/store/modules/expert';
 import { login } from '@/apis/users';
@@ -36,6 +37,7 @@ import { showConfirmDialog, showFailToast, showSuccessToast, showToast } from 'v
 
 const auth = ref<HTMLAnchorElement>();
 onMounted(() => {
+  //检测是否信任网站
   const { DEV } = import.meta.env;
   if (DEV && localStorage.getItem('isAuth') != 'true') {
     showConfirmDialog({
@@ -85,24 +87,39 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: pickerItem[] }) => {
 };
 
 const router = useRouter();
-
+const route = useRoute();
 const onLogin = async function () {
   try {
     const res = await login(loginData);
-    console.log(res);
     if (res.msg == 'success') {
       showSuccessToast("登录成功")
       if (loginData.role == 'CANDICATE') {
         const student = useStudentStore();
-        student.username = loginData.username;
-        router.push('/studentHome')
+
+        student.data.username = loginData.username;
+        sessionStorage.setItem('data', JSON.stringify(student.data));
+        sessionStorage.setItem('store', 'student');
+
+        if (route.query.redirect) {
+          router.push(route.query.redirect as string);
+        }
+        else router.push('/studentHome')
+
       }
       else if (loginData.role == 'INTERVIEWER') {
         const expert = useExpertStore();
-        expert.username = loginData.username;
-        router.push('/expertHome')
+        expert.data.username = loginData.username;
+
+        if (route.query.redirect) {
+          router.push(route.query.redirect as string);
+        }
+        else router.push('/expertHome')
+        sessionStorage.setItem('data', JSON.stringify(expert.data));
+        sessionStorage.setItem('store', 'expert');
       }
       localStorage.setItem('isAuth', 'true');
+      sessionStorage.setItem('isAuthenticated', JSON.stringify(true));
+
     }
     else {
       showFailToast(res.msg);
