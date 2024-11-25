@@ -1,39 +1,25 @@
 # vue3_interview
 
-This template should help get you started developing with Vue 3 in Vite.
+### 想要实现同一局域网下通话的话，需要改变请求接口
 
-## Recommended IDE Setup
+---
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+#### 改变方式
 
-## Type Support for `.vue` Imports in TS
+##### 一、克隆代码
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+##### 二、在代码当前目录下的文件.env.production
 
-## Customize configuration
+###### 修改以下配置中的localhost改成当前你的局域网ip
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+`VITE_APP_BASE_API = 'https://localhost:444'`
 
-## Project Setup
+`VITE_APP_SOCKET_URL = 'https://localhost:3000'`
 
-```sh
-pnpm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-pnpm dev
-```
-
-### Type-Check, Compile and Minify for Production
+##### 三、打包文件
 
 ```sh
 pnpm build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-pnpm lint
-```
+###### 打包成功后将新生成的dist目录下的全部东西替换之前的前端服务器目录中的public下的全部东西d
