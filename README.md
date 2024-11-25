@@ -16,7 +16,7 @@
 
 `VITE_APP_SOCKET_URL = 'https://localhost:3000'`
 
-##### 三、打包文件
+##### 三、cmd进入当前目录文件夹,输入一下命令打包文件
 
 ```sh
 pnpm build
