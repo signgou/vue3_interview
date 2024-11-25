@@ -1,16 +1,13 @@
-// test.ts
-
 import { MockMethod } from 'vite-plugin-mock'
 export default [
   {
-    url: '/api/get',
-    method: 'get',
+    url: '/users/login',
+    method: 'post',
     response: () => {
       return {
         code: 0,
-        data: {
-          name: 'vben',
-        },
+        msg: 'success',
+        data: '登录成功',
       }
     },
   },

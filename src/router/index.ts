@@ -13,7 +13,8 @@ const router = createRouter({
   },
 })
 router.beforeEach(async (to, from) => {
-  if (to.name == 'register' || to.name == 'login') return
+  //如果不需要授权就返回
+  if (to.meta.requiresAuth == false) return
 
   const isAuthenticated = JSON.parse(
     sessionStorage.getItem('isAuthenticated') || 'false',

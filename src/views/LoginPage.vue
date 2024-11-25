@@ -53,9 +53,9 @@ onMounted(() => {
             VITE_APP_BASE_API: api_url,
             VITE_APP_SOCKET_URL: socket_url
           } = import.meta.env;
-          auth.value.href = api_url;
-          auth.value.click();
           auth.value.href = socket_url;
+          auth.value.click();
+          auth.value.href = api_url;
           auth.value.click();
         }
       })

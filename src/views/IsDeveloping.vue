@@ -12,6 +12,7 @@
     </van-row>
     <van-row justify="center">
       <van-button class="back-btn title" @click="back">返回</van-button>
+      <van-button class="login-btn title" @click="$router.push('/login')">去登录</van-button>
     </van-row>
   </div>
 </template>
@@ -40,6 +41,12 @@ const back = function () {
     margin-top: 2rem;
     height: 2rem;
     width: 4rem;
+  }
+
+  .login-btn {
+    margin-left: 1rem;
+    margin-top: 2rem;
+    height: 2rem;
   }
 }
 </style>

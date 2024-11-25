@@ -1,14 +1,4 @@
 <template>
-  <!-- 顶部导航栏 -->
-  <van-nav-bar @click-left="$router.push('/login'); expert.socket.disconnect()">
-    <template #left>
-      <van-icon name="arrow-left" color="#323233"></van-icon>
-    </template>
-    <template #title>
-      <h1 class="top title">公试</h1>
-    </template>
-  </van-nav-bar>
-
   <!-- 广告 -->
   <van-swipe class="my-swipe" :autoplay="3000" indicator-color="black">
     <van-swipe-item>
@@ -41,13 +31,6 @@
     <!-- 加一个空白区域防止底部标签栏挡住选项 -->
     <div style="height: 50px;"></div>
   </div>
-
-  <!-- 底部标签栏 -->
-  <van-tabbar v-model="active" class="title" active-color="#000000" inactive-color="#969799">
-    <van-tabbar-item name="link" icon="exchange">连线</van-tabbar-item>
-    <van-tabbar-item name="profile" icon="user-o" to="/isDeveloping">我</van-tabbar-item>
-  </van-tabbar>
-
 </template>
 
 <script setup lang="ts">
@@ -71,7 +54,6 @@ onBeforeMount(() => {
   })
 })
 
-const active = ref('link');
 </script>
 
 <style lang="scss" scoped>
@@ -90,9 +72,6 @@ const active = ref('link');
   height: auto;
 }
 
-.top.title {
-  font-size: 1.1rem;
-}
 
 .my-swipe {
   border: 0.1rem solid #eceff4;
