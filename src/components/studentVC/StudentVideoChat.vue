@@ -42,7 +42,7 @@ import { io, Socket } from 'socket.io-client';
 import useStudentStore from '@/store/modules/student';
 import { closeToast, showFailToast, showLoadingToast } from 'vant';
 import { useRouter } from 'vue-router';
-
+import { initRTC } from '@/utils/init-rtc';
 
 const student = useStudentStore();
 const localVideo = ref();
@@ -73,8 +73,6 @@ const constraints = {
   audio: true,
   video: true,
 };
-let makingOffer = false;
-const polite = false;
 
 interface Rate {
   score: number
@@ -120,77 +118,14 @@ const initSocket = function () {
   firstTime = false;
 }
 
-const initRTC = function () {
-
-  //添加轨道的事件
-  pc.ontrack = ({ streams }) => {
-    remoteVideo.value.srcObject = streams[0];
-    remoteVideo.value.play();
-  };
-
-  //完美协商
-  pc.onnegotiationneeded = async () => {
-    try {
-      makingOffer = true;
-      await pc.setLocalDescription();
-      socket.emit("message", { description: pc.localDescription });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      makingOffer = false;
-    }
-  };
-  pc.onicecandidate = ({ candidate }) => socket.emit("message", { candidate });
-
-  //出现ice错误是重新获取ice
-  pc.oniceconnectionstatechange = () => {
-    if (pc.iceConnectionState === "failed") {
-      pc.restartIce();
-    }
-  };
-  interface Data {
-    description: RTCSessionDescription,
-    candidate: RTCIceCandidate
-  }
-  let ignoreOffer = false;
-
-  const onmessage = async ({ description, candidate }: Data) => {
-    try {
-      if (description) {
-        const offerCollision =
-          description.type === "offer" &&
-          (makingOffer || pc.signalingState !== "stable");
-
-        ignoreOffer = !polite && offerCollision;
-        if (ignoreOffer) {
-          return;
-        }
-
-        await pc.setRemoteDescription(description);
-        if (description.type === "offer") {
-          await pc.setLocalDescription();
-          socket.emit("message", { description: pc.localDescription });
-        }
-      } else if (candidate) {
-        try {
-          await pc.addIceCandidate(candidate);
-        } catch (err) {
-          if (!ignoreOffer) {
-            throw err;
-          }
-        }
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  socket.on("message", onmessage);
+const initCustomRTC = function () {
+  initRTC(pc, remoteVideo.value, socket, false);
 }
 
 const wait = function () {
   load.value = true;
   initSocket();
-  initRTC();
+  initCustomRTC();
 }
 
 async function link() {
