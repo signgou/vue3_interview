@@ -25,6 +25,7 @@
     "webrtc-adapter": "^9.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.52.0",
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^20.17.0",
     "@vant/auto-import-resolver": "^1.2.1",
